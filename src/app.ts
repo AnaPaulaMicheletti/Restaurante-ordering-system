@@ -1,36 +1,90 @@
 import express from "express";
 import {randomUUID} from "node:crypto";
 import supabase from "./config/supabase.js";
+import Category from "./models/Category.js";
+import Product from "./models/Product.js";
 
 const app = express();
 
 app.use(express.json());
 
+app.get("/categories/:id", async (req, res) =>{
+  catch(error){
+    console.log("Erro ao buscar categoria:", error);
+    res.status(404).json({
+      message: "Erro ao buscar categorias.",
+    });
+  }
+});
 
-app.get("/categories", async (req, res) =>{
+app.get("/categories/:id", async (req, res) =>{
   try{
-    const categories = await Category.findAll();
-    res.status(200).json(categories);
+    const category = await Category.findById(req.params.id);
+    res.status(200).json(category);
 
   }catch (error){
-    console.log("Erro ao buscar categorias: ", error);
+    console.log("Erro ao buscar categoria: ", error);
 
     res.status(500).json({
-      message: "Erro ao buscar categorias.",
+      message: "Erro ao buscar categoria.",
     });
   }
 });
 
 app.post("/categories", async (req, res) => {
   try{
-    const categories = await Category.create(req.body);
-    res.status(201).json(categories);
+    const category = await Category.create(req.body);
+    res.status(201).json(category);
 
   }catch (error){
-    console.log("Erro ao criar categorias: ", error);
+    console.log("Erro ao criar categoria: ", error);
 
     res.status(500).json({
-      message: "Erro ao criar categorias.",
+      message: "Erro ao criar categoria.",
+    });
+  }
+});
+
+app.get("/categories/search/:keyword", async (req, res) =>{
+  try{
+    const category = await Category.findByKeyword(req.params.keyword);
+    res.status(200).json(category);
+
+  }catch (error){
+    console.log("Erro ao buscar categoria: ", error);
+
+    res.status(500).json({
+      message: "Erro ao buscar categoria.",
+    });
+  }
+});
+
+app.put("/categories/:id", async (req, res) =>{
+  try{
+    const category = await Category.update(req.params.id, req.body);
+    res.status(200).json(category);
+
+  }catch (error){
+    console.log("Erro ao buscar categoria: ", error);
+
+    res.status(500).json({
+      message: "Erro ao buscar categoria.",
+    });
+  }
+});
+
+app.delete("/categories/:id", async (req, res) =>{
+  try{
+    const category = await Category.remove(req.params.id);
+    res.status(200).json({
+      message: "Categoria removida com sucesso.",
+    });
+
+  }catch (error){
+    console.log("Erro ao remover categoria: ", error);
+
+    res.status(500).json({
+      message: "Categoria nao encontrada.",
     });
   }
 });
@@ -91,9 +145,9 @@ app.post("/categories", (req, res) => {
 
 
 
-app.get("/products", async (req, res) =>{
+app.get("/products/:id", async (req, res) =>{
   try{
-    const categories = await Product.findAll();
+    const products = await Product.findAll();
     res.status(200).json(products);
 
   }catch (error){
@@ -105,16 +159,60 @@ app.get("/products", async (req, res) =>{
   }
 });
 
-app.post("/products", async (req, res) => {
+app.post("/products/:id", async (req, res) => {
   try{
-    const product = await Product.create(req.body);
-    res.status(201).json(product);
+    const products = await Product.create(req.body);
+    res.status(201).json(products);
 
   }catch (error){
     console.log("Erro ao criar produto: ", error);
 
     res.status(500).json({
       message: "Erro ao criar produto.",
+    });
+  }
+});
+
+app.get("/products/search/:keyword", async (req, res) =>{
+  try{
+    const products = await Product.findByKeyword(req.params.keyword);
+    res.status(200).json(products);
+
+  }catch (error){
+    console.log("Erro ao buscar categoria: ", error);
+
+    res.status(500).json({
+      message: "Erro ao buscar categoria.",
+    });
+  }
+});
+
+app.put("/products/:id", async (req, res) =>{
+  try{
+    const products = await Product.update(req.params.id, req.body);
+    res.status(200).json(products);
+
+  }catch (error){
+    console.log("Erro ao buscar producto: ", error);
+
+    res.status(500).json({
+      message: "Erro ao buscar produto.",
+    });
+  }
+});
+
+app.delete("/product/:id", async (req, res) =>{
+  try{
+    const products = await Product.remove(req.params.id);
+    res.status(200).json({
+      message: "Produto removido com sucesso.",
+    });
+
+  }catch (error){
+    console.log("Erro ao remover produto: ", error);
+
+    res.status(500).json({
+      message: "Produto nao encontrado.",
     });
   }
 });

@@ -42,6 +42,8 @@ async function create(products: {
     if(error){
         throw error;
     }
+    return data;
+}
 
 async function update(id: string, product: {
     name: string,
@@ -76,9 +78,7 @@ async function remove(id: string){
     }
     return data;
 }
-    
-    return data;
-}
+
 
 async function findByKeyword(keyword: string){
     const {data, error} = await supabase

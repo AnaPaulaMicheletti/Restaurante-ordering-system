@@ -103,7 +103,7 @@ async function getByKeyword(req: Request, res: Response){
 
     if(!keyword || typeof keyword != "string"){
         return res.status(400).json({
-            menssage: "Palavra-chave não informada",
+            message: "Palavra-chave não informada",
         });
     }
 

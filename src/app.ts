@@ -3,13 +3,34 @@ import {randomUUID} from "node:crypto";
 import supabase from "./config/supabase.js";
 import Category from "./models/Category.js";
 import Product from "./models/Product.js";
+//omateusrpereira - github
+
+import categoryRoutes from "./routes/categoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
 
 const app = express();
 
 app.use(express.json());
 
-app.get("/categories/:id", async (req, res) =>{
-  catch(error){
+// ==================
+// Root
+// ==================
+
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "Restaurante Ordering System API",
+    version: "1.0.0",
+  });
+});
+
+app.use("/categories", categoryRoutes);
+
+/*app.get("/categories/:id", async (req, res) =>{
+  try{
+    const categories = await Category.findAll();
+    res.status(200).json(categories);
+
+  }catch(error){
     console.log("Erro ao buscar categoria:", error);
     res.status(404).json({
       message: "Erro ao buscar categorias.",
@@ -89,7 +110,7 @@ app.delete("/categories/:id", async (req, res) =>{
   }
 });
 
-/*app.get("/", (req, res) => {
+//app.get("/", (req, res) => {
     res.status(200).json({
         mensage: "Restaurante Ordering System API",
         version: "1.0.0"
@@ -141,10 +162,13 @@ app.post("/categories", (req, res) => {
 
     res.status(201).json(category);
 })
+//
 */
 
 
+app.use("/products", productRoutes);
 
+/*
 app.get("/products/:id", async (req, res) =>{
   try{
     const products = await Product.findAll();
@@ -180,7 +204,7 @@ app.get("/products/search/:keyword", async (req, res) =>{
 
   }catch (error){
     console.log("Erro ao buscar categoria: ", error);
-
+ 
     res.status(500).json({
       message: "Erro ao buscar categoria.",
     });
@@ -217,7 +241,7 @@ app.delete("/product/:id", async (req, res) =>{
   }
 });
 
-/*
+//
 app.get("/products/:id", (req, res) => {
     const product = products.find((product) => {
       return product.id == req.params.id;
@@ -280,7 +304,7 @@ app.delete("/products/id:", (req, res) => {
     })
 
 });
-*/
+//
 
 app.get("/test-supabase", async (req, res) => {
   const {data, error} = await supabase
@@ -303,5 +327,6 @@ app.get("/test-supabase", async (req, res) => {
     data,
   });
 })
+*/
 
 export default app;

@@ -1,8 +1,4 @@
 import express from "express";
-import {randomUUID} from "node:crypto";
-import supabase from "./config/supabase.js";
-import Category from "./models/Category.js";
-import Product from "./models/Product.js";
 //omateusrpereira - github
 
 import categoryRoutes from "./routes/categoryRoutes.js";

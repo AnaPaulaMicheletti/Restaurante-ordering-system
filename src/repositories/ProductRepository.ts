@@ -1,5 +1,5 @@
 import supabase from "../config/supabase.js";
-import type { Product } from "../models/Product.js";
+import { Product } from "../models/Product.js";
 
 async function findAll(){
     const{data, error} =  await supabase
@@ -12,7 +12,7 @@ async function findAll(){
     return data;
 }
 
-async function findById(id: string){
+async function findById(id: string): Promise<Product> {
     const{data, error} =  await supabase
     .from("products")
     .select("*")
@@ -22,13 +22,29 @@ async function findById(id: string){
     if(error){
         throw error;
     }
-    return data;
+
+    return Product.restore(
+            data.id,
+            data.name,
+            data.display_order,
+            data.active,
+            data.description,
+            data.icon,
+            data.category_id,
+        );
 }
 
 async function create(products: Product){
     const{data, error} =  await supabase
     .from("products")
-    .insert(products)
+    .insert({
+        name: products.getName(),
+        description: products.getDescription(),
+        icon: products.getIcon(),
+        display_order: products.getDisplayOrder(),
+        category_id: products.getCategoryId(),
+        active: products.isActive(),
+    })
     .select()
     .single();
 
@@ -38,10 +54,23 @@ async function create(products: Product){
     return data;
 }
 
-async function update(id: string, product: Product){
+async function update(product: Product){
+    const id = product.getId();
+
+    if(!id){
+        throw new Error("Produto sem ID não pode ser atualizado.")
+    }
+
     const{data, error} =  await supabase
     .from("products")
-    .update(product)
+    .update({
+        name: product.getName(),
+        description: product.getDescription(),
+        icon: product.getIcon(),
+        display_order: product.getDisplayOrder(),
+        category_id: product.getCategoryId(),
+        active: product.isActive(),
+    })
     .eq("id", id)
     .select()
     .single();

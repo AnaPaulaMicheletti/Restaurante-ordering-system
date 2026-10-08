@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { Product } from "../models/Product.js";
 import ProductRepository from "../repositories/ProductRepository.js";
 
 async function getAll(req: Request, res: Response){
@@ -27,7 +28,14 @@ async function getById(req: Request <{id: string}>, res: Response){
     }
     try{
         const product = await ProductRepository.findById(id);
-        res.status(200).json(product);
+        res.status(200).json({
+          name: product.getName(),
+          description: product.getDescription(),
+          icon: product.getIcon(),
+          display_order: product.getDisplayOrder(),
+          category_id: product.getCategoryId(),
+          active: product.isActive(),
+        });
 
     }catch (error){
         console.log("Erro ao buscar produto: ", error);
@@ -39,9 +47,13 @@ async function getById(req: Request <{id: string}>, res: Response){
 }
 
 async function create(req: Request, res: Response){
+  const { name, display_order, description, icon, category_id} = req.body;
+
     try{
-        const product = await ProductRepository.create(req.body);
-        res.status(201).json(product);
+        const product = new Product(name, display_order, description, icon, category_id);
+
+        const createdProduct = await ProductRepository.create(req.body);
+        res.status(201).json(createdProduct);
 
   }catch (error){
     console.log("Erro ao criar produto: ", error);
@@ -53,7 +65,8 @@ async function create(req: Request, res: Response){
 }
 
 async function update(req: Request <{id: string}>, res: Response){
-    const {id} = req.params
+    const {id} = req.params;
+    const {name, display_order, description, icon, category_id} = req.body;
 
     if(!id){
         return res.status(400).json({
@@ -62,8 +75,15 @@ async function update(req: Request <{id: string}>, res: Response){
     }
 
     try{
-    const product = await ProductRepository.update(id, req.body);
-    res.status(200).json(product);
+      const product = await ProductRepository.findById(id);
+
+      if(category_id !== undefined){
+        product.changeCategory(category_id);
+      }
+
+      const updateProduct = await ProductRepository.update(product);
+
+      res.status(200).json(updateProduct);
 
   }catch (error){
     console.log("Erro ao buscar produto: ", error);

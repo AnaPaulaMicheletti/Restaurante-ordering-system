@@ -1,9 +1,104 @@
-export interface Product{
-    id?: string;
-    name: string;
-    description: string;
-    icon: string;
-    display_order: number;
-    active: boolean;
+export class Product{
+    private id?: string | undefined;
+    private name: string;
+    private description: string | undefined;
+    private icon: string | undefined;
+    private display_order: number;
+    private category_id: string | undefined;
+    private active: boolean;
+
+    constructor(
+        name: string,
+        display_order: number,
+        description?: string,
+        icon?: string,
+        category_id?: string,
+    ){
+        this.id = undefined;
+        this.name = name;
+        this.description = description;
+        this.icon = icon;
+        this.display_order = display_order;
+        this.category_id = category_id;
+        this.active = true;
+    }
+
+    static restore(
+    id: string,
+    name: string,
+    description: string | undefined,
+    icon: string | undefined,
+    display_order: number,
+    active: boolean,
+    category_id: string | undefined,
+    ): Product{
+        const product = new Product(name, display_order, description, icon, category_id);
+
+        product.id = id;
+        product.active = active;
+
+        return product;
+    }
+
+    public getId(): string | undefined{
+        return this.id;
+    }
+
+    public getName(): string {
+        return this.name;
+    }
+
+    public getDescription(): string | undefined{
+        return this.description;
+    }
+
+    public getIcon(): string | undefined{
+        return this.icon;
+    }
+
+    public getDisplayOrder(): number{
+        return this.display_order;
+    }
+
+    public getCategoryId(): string | undefined{
+        return this.category_id;
+    }
+
+    public isActive(): boolean{
+        return this.active;
+    }
+
+    //para renomear name
+    rename(name: string): void{
+        this.name = name;
+    }
+
+
+    //para trocar a descrição, icon, pedido
+    changeDescription(description: string): void{
+        this.description = description;
+    }
+
+    changeIcon(icon: string): void{
+        this.description = icon;
+    }
+
+    changeDisplayOrder(display_order: number): void{
+        this.display_order = display_order;
+    }
+
+    changeCategory(category_id: string): void{
+        this.category_id = category_id;
+    }
+
+    
+
+    activate(): void{
+        this.active = true;
+    }
+
+    deactivate(): void{
+        this.active = false;
+    }
 }
 

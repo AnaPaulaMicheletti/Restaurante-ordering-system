@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { Category } from "../models/Category.js";
 import CategoryRepository from "../repositories/CategoryRepository.js";
 
 async function getAll(req: Request, res: Response){
@@ -8,7 +9,7 @@ async function getAll(req: Request, res: Response){
             res.status(200).json(categories);
         
           }catch(error){
-            console.log("Erro ao buscar categoria:", error);
+            console.log("Erro ao buscar categoria:", (error as Error).message);
 
             res.status(404).json({
               message: "Erro ao buscar categorias.",
@@ -27,7 +28,13 @@ async function getById(req: Request <{id: string}>, res: Response){
     }
     try{
         const category = await CategoryRepository.findById(id);
-        res.status(200).json(category);
+        res.status(200).json({
+          name: category.getName(),
+          description: category.getDescription(),
+          icon: category.getIcon(),
+          display_order: category.getDisplayOrder(),
+          active: category.isActive(),
+        });
 
     }catch (error){
         console.log("Erro ao buscar categoria: ", error);
@@ -39,9 +46,14 @@ async function getById(req: Request <{id: string}>, res: Response){
 }
 
 async function create(req: Request, res: Response){
+  const { name, display_order, description, icon} = req.body;
+
     try{
-        const category = await CategoryRepository.create(req.body);
-        res.status(201).json(category);
+        const category = new Category(name, display_order, description, icon);
+
+        const createdCategory = await CategoryRepository.create(category);
+
+        res.status(201).json(createdCategory);
 
   }catch (error){
     console.log("Erro ao criar categoria: ", error);
@@ -53,7 +65,8 @@ async function create(req: Request, res: Response){
 }
 
 async function update(req: Request <{id: string}>, res: Response){
-    const {id} = req.params
+    const {id} = req.params;
+    const {name, display_order, description, icon} = req.body;
 
     if(!id){
         return res.status(400).json({
@@ -62,8 +75,11 @@ async function update(req: Request <{id: string}>, res: Response){
     }
 
     try{
-    const category = await CategoryRepository.update(id, req.body);
-    res.status(200).json(category);
+      const category = await CategoryRepository.findById(id);
+
+      const updateCategory = await CategoryRepository.update(category);
+
+      res.status(200).json(updateCategory);
 
   }catch (error){
     console.log("Erro ao buscar categoria: ", error);

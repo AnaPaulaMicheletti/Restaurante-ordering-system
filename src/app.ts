@@ -106,7 +106,7 @@ app.delete("/categories/:id", async (req, res) =>{
   }
 });
 
-//app.get("/", (req, res) => {
+app.get("/", (req, res) => {
     res.status(200).json({
         mensage: "Restaurante Ordering System API",
         version: "1.0.0"
@@ -300,7 +300,7 @@ app.delete("/products/id:", (req, res) => {
     })
 
 });
-//
+
 
 app.get("/test-supabase", async (req, res) => {
   const {data, error} = await supabase

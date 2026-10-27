@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { Product } from "../models/Product.js";
 import ProductRepository from "../repositories/ProductRepository.js";
+import { ValidationError } from "../errors/Validation.Error.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 
 async function getAll(req: Request, res: Response){
     try {
@@ -40,8 +42,14 @@ async function getById(req: Request <{id: string}>, res: Response){
     }catch (error){
         console.log("Erro ao buscar produto: ", error);
 
+        if(error instanceof ValidationError){
+            return res.status(404).json({
+            message: error.message,
+          });
+        }
+
         res.status(404).json({
-      message: "Erro ao buscar produto.",
+      message: "Erro interno ao buscar produto.",
     });
   }
 }
@@ -52,21 +60,25 @@ async function create(req: Request, res: Response){
     try{
         const product = new Product(name, display_order, description, icon, category_id);
 
-        const createdProduct = await ProductRepository.create(req.body);
+        const createdProduct = await ProductRepository.create(product);
         res.status(201).json(createdProduct);
 
   }catch (error){
-    console.log("Erro ao criar produto: ", error);
+    if(error instanceof ValidationError){
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
 
     res.status(500).json({
-      message: "Erro ao criar produto.",
+      message: "Erro interno ao criar produto.",
     });
   }
 }
 
 async function update(req: Request <{id: string}>, res: Response){
     const {id} = req.params;
-    const {name, display_order, description, icon, category_id} = req.body;
+    const {name, display_order, description, icon, category_id, active} = req.body;
 
     if(!id){
         return res.status(400).json({
@@ -76,6 +88,31 @@ async function update(req: Request <{id: string}>, res: Response){
 
     try{
       const product = await ProductRepository.findById(id);
+
+      //validação
+      if(name !== undefined){
+        product.rename(name);
+      }
+
+      if(description != undefined){
+        product.changeDescription(description);
+      }
+
+      if(icon != undefined){
+        product.changeIcon(icon);
+      }
+
+      if(display_order != undefined){
+        product.changeDisplayOrder(display_order);
+      }
+
+      if(active === true){
+        product.activate();
+      }
+
+      if(active === false){
+        product.deactivate();
+      }
 
       if(category_id !== undefined){
         product.changeCategory(category_id);
@@ -88,8 +125,20 @@ async function update(req: Request <{id: string}>, res: Response){
   }catch (error){
     console.log("Erro ao buscar produto: ", error);
 
+    if(error instanceof ValidationError){
+        res.status(400).json({
+        message: error.message,
+      });
+    }
+
+    if(error instanceof NotFoundError){
+      res.status(400).json({
+        message: error.message,
+      });
+    }
+
     res.status(500).json({
-      message: "Erro ao buscar produto.",
+      message: "Erro interno ao buscar produto.",
     });
   }
 }

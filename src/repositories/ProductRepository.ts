@@ -17,7 +17,7 @@ async function findById(id: string): Promise<Product> {
     .from("products")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
     if(error){
         throw error;
@@ -73,7 +73,7 @@ async function update(product: Product){
     })
     .eq("id", id)
     .select()
-    .single();
+    .maybeSingle();
     
     if(error){
         throw error;

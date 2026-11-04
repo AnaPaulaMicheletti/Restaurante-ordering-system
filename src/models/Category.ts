@@ -28,10 +28,10 @@ export class Category{
     static restore(
     id: string,
     name: string,
-    description: string | undefined,
-    icon: string | undefined,
     display_order: number,
     active: boolean,
+    description: string,
+    icon: string,
     ): Category{
         const category = new Category(name, display_order, description, icon);
 
@@ -72,7 +72,7 @@ export class Category{
             throw new ValidationError ("O nome da categoria é obrigatorio.");
         }
 
-        this.name = name;
+        this.name = name.trim();
     }
 
 
@@ -82,12 +82,12 @@ export class Category{
     }
 
     changeIcon(icon: string): void{
-        this.description = icon;
+        this.icon = icon;
     }
 
     changeDisplayOrder(display_order: number): void{
         if(!Number.isInteger(display_order) || display_order < 0){
-            throw new ValidationError ("A ordem de exibição deve ser um numero inteiro maior ou igual a zer(0).");
+            throw new ValidationError ("A ordem de exibição deve ser um numero inteiro maior ou igual a zero.");
         }
         
         this.display_order = display_order;

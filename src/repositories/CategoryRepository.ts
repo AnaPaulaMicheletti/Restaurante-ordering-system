@@ -1,6 +1,6 @@
- import supabase from "../config/supabase.js";
+import supabase from "../config/supabase.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
- import { Category } from "../models/Category.js";
+import { Category } from "../models/Category.js";
 
 async function findAll(){
     const{data, error} =  await supabase
@@ -76,7 +76,7 @@ async function update(category: Category){
     })
     .eq("id", id)
     .select()
-    .maybeSingle();
+    .single();
     
     if(error){
         throw error;
@@ -95,11 +95,16 @@ async function remove(id: string){
     .delete()
     .eq("id", id)
     .select()
-    .single();
+    .maybeSingle();
     
     if(error){
         throw error;
     }
+
+    if(!data){
+        throw new NotFoundError("Categoria não encontrada.");
+    }
+
     return data;
 }
 

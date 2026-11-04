@@ -41,7 +41,7 @@ async function getById(req: Request <{id: string}>, res: Response){
     }catch (error){
         console.log("Erro ao buscar categoria: ", error);
 
-        if(error instanceof ValidationError){
+        if(error instanceof NotFoundError){
           return res.status(400).json({
             message: error.message,
           });
@@ -65,7 +65,7 @@ async function create(req: Request, res: Response){
 
   }catch (error){
     if(error instanceof ValidationError){
-        return res.status(500).json({
+        return res.status(400).json({
         message: error.message,
       });
     }
@@ -94,15 +94,15 @@ async function update(req: Request <{id: string}>, res: Response){
         category.rename(name);
       }
 
-      if(description != undefined){
+      if(description !== undefined){
         category.changeDescription(description);
       }
 
-      if(icon != undefined){
+      if(icon !== undefined){
         category.changeIcon(icon);
       }
 
-      if(display_order != undefined){
+      if(display_order !== undefined){
         category.changeDisplayOrder(display_order);
       }
 
@@ -149,7 +149,8 @@ async function remove(req: Request <{id: string}>, res: Response){
     }
     
     try{
-        const category = await CategoryRepository.remove(id);
+        await CategoryRepository.remove(id);
+
         res.status(200).json({
       message: "Categoria removida com sucesso.",
     });
@@ -157,8 +158,14 @@ async function remove(req: Request <{id: string}>, res: Response){
   }catch (error){
     console.log("Erro ao remover categoria: ", error);
 
+    if(error instanceof NotFoundError){
+      res.status(404).json({
+        message: error.message,
+      });
+    }
+
     res.status(500).json({
-      message: "Categoria nao encontrada.",
+      message: "Erro interno ao remover categoria.",
     });
   }
 }

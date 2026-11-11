@@ -7,7 +7,7 @@ describe("Category - Testes unitários", () => {
         const name = "Pizzas";
         const display_order = 1;
         const description = "Categoria de pizzas";
-        const icon = "";
+        const icon = "🍕";
 
         const category = new Category(name, display_order, description, icon);
 
@@ -130,29 +130,37 @@ describe("Category - Testes unitários", () => {
         expect (category.getDisplayOrder()).toBe(1);
         expect (category.isActive()).toBe(false);
         expect (category.getDescription()).toBe("Categoria de pizzas");
-        expect (category.getIcon()).toBe("");
+        expect (category.getIcon()).toBe("🍕");
     });
 
 
     it("deve permitir alterar a descrição de uma categoria existente", () => {
-
-        const category = new Category("Pizzas", 1, "Categoria de pizzas tradicionais");
-
-        category.changeDescription("Categoria de pizzas tradicionais e especiais")
-
-        expect (category.getDescription()).toBe("Categoria de pizzas tradicionais e especiais");
+        const category = new Category(
+            "Pizzas",
+            1,
+            "Categoria de pizzas tradicionais",
+        );
+ 
+        category.changeDescription("Categoria de pizzas tradicionais e especiais");
+ 
+        expect(category.getDescription()).toBe(
+            "Categoria de pizzas tradicionais e especiais"
+        );
     });
-
-
+ 
+ 
     it("deve permitir alterar o ícone de uma categoria existente", () => {
-
-        const category = new Category("Pizzas", 1, "Categoria de pizzas tradicionais");
-
-        category.changeIcon("")
-
-        expect (category.getIcon()).toBe("");
+        const category = new Category(
+            "Pizzas",
+            1,
+            "Categoria de pizzas tradicionais",
+            "🍕",
+        );
+ 
+        category.changeIcon("🥤");
+ 
+        expect(category.getIcon()).toBe("🥤");
     });
-
 
     it("deve permitir alterar o ordem de exibição de uma categoria existente", () => {
 

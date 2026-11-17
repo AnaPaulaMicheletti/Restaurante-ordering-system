@@ -1,4 +1,4 @@
-import { ValidationError } from "../errors/Validation.Error.js";
+import { ValidationError } from "../errors/ValidationError.js";
 
 export class Product{
     private id?: string | undefined;
@@ -79,7 +79,7 @@ export class Product{
             throw new ValidationError ("O nome do produto é obrigatório.");
         }
 
-        this.name = name;
+        this.name = name.trim();
     }
 
 
@@ -89,7 +89,7 @@ export class Product{
     }
 
     changeIcon(icon: string): void{
-        this.description = icon;
+        this.icon = icon;
     }
 
     changeDisplayOrder(display_order: number): void{

@@ -10,7 +10,7 @@ describe("Product - Testes unitários", () => {
         const icon = "🍕";
         const category_id = "cat-123"
 
-        const product = new Product(name, display_order, description, icon);
+        const product = new Product(name, display_order, description, icon, category_id);
 
         expect (product.getName()).toBe("Pizzas Margherita");
         expect (product.getDisplayOrder()).toBe(1);
@@ -48,7 +48,7 @@ describe("Product - Testes unitários", () => {
 
         const product = new Product(name, display_order);
 
-        expect (product.getName()).toBe("Pizzas");
+        expect (product.getName()).toBe("Pizzas Margherita");
     });
 
 
@@ -58,7 +58,7 @@ describe("Product - Testes unitários", () => {
 
         expect(() => {
             new Product(name, display_order);
-        }).toThrow("A ordem de exibição deve ser um numero inteiro maior ou igual a zero.")
+        }).toThrow("A ordem de exibição deve ser um número inteiro maior ou igual a zero.")
     });
 
 
@@ -68,7 +68,7 @@ describe("Product - Testes unitários", () => {
 
         expect(() => {
             new Product(name, display_order);
-        }).toThrow("A ordem de exibição deve ser um numero inteiro maior ou igual a zero.")
+        }).toThrow("A ordem de exibição deve ser um número inteiro maior ou igual a zero.")
     });
 
 
@@ -193,6 +193,6 @@ describe("Product - Testes unitários", () => {
         
         product.changeCategory("cat-456");
 
-        expect (product.getCategoryId()).toBe("cta-456");
+        expect (product.getCategoryId()).toBe("cat-456");
     });
 });

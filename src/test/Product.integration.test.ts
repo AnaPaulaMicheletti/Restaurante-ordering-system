@@ -58,7 +58,7 @@ describe("Product - Teste de integração", () => {
         const names = testNames.slice(0);
         const cNames = categoryNames.slice(0);
 
-        if(names.length === 0){
+        if(names.length > 0){
             const {error} = await supabase
             .from ("products")
             .delete()

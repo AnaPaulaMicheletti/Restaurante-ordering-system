@@ -1,23 +1,21 @@
 import type { Request, Response } from "express";
 import { Product } from "../models/Product.js";
 import ProductRepository from "../repositories/ProductRepository.js";
-import { ValidationError } from "../errors/Validation.Error.js";
+import { ValidationError } from "../errors/ValidationError.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 
 async function getAll(req: Request, res: Response){
-    try {
-        try{
-            const products = await ProductRepository.findAll();
-            res.status(200).json(products);
-        
-          }catch(error){
-            console.log("Erro ao buscar produto:", error);
-
-            res.status(404).json({
-              message: "Erro ao buscar produto.",
-            });
-        }
-    }catch (error){}
+  try{
+      const products = await ProductRepository.findAll();
+      res.status(200).json(products);
+  
+      }catch(error){
+        console.log("Erro ao buscar produto:", error);
+      
+        res.status(500).json({
+          message: "Erro ao buscar produto.",
+      });
+  }
 }
 
 async function getById(req: Request <{id: string}>, res: Response){
@@ -31,6 +29,7 @@ async function getById(req: Request <{id: string}>, res: Response){
     try{
         const product = await ProductRepository.findById(id);
         res.status(200).json({
+          id: product.getId(),
           name: product.getName(),
           description: product.getDescription(),
           icon: product.getIcon(),
@@ -42,7 +41,7 @@ async function getById(req: Request <{id: string}>, res: Response){
     }catch (error){
         console.log("Erro ao buscar produto: ", error);
 
-        if(error instanceof ValidationError){
+        if(error instanceof NotFoundError){
             return res.status(404).json({
             message: error.message,
           });
@@ -65,7 +64,7 @@ async function create(req: Request, res: Response){
 
   }catch (error){
     if(error instanceof ValidationError){
-      return res.status(500).json({
+      return res.status(400).json({
         message: error.message,
       });
     }
@@ -82,7 +81,7 @@ async function update(req: Request <{id: string}>, res: Response){
 
     if(!id){
         return res.status(400).json({
-            message: "ID dp Produto não informado.",
+            message: "ID do Produto não informado.",
         });
     }
 
@@ -126,13 +125,13 @@ async function update(req: Request <{id: string}>, res: Response){
     console.log("Erro ao buscar produto: ", error);
 
     if(error instanceof ValidationError){
-        res.status(400).json({
+        return res.status(400).json({
         message: error.message,
       });
     }
 
     if(error instanceof NotFoundError){
-      res.status(400).json({
+        return res.status(404).json({
         message: error.message,
       });
     }
@@ -153,7 +152,7 @@ async function remove(req: Request <{id: string}>, res: Response){
     }
     
     try{
-        const product = await ProductRepository.remove(id);
+        await ProductRepository.remove(id);
         res.status(200).json({
       message: "Produto removido com sucesso.",
     });
@@ -161,13 +160,20 @@ async function remove(req: Request <{id: string}>, res: Response){
   }catch (error){
     console.log("Erro ao remover produto: ", error);
 
-    res.status(500).json({
+    if(error instanceof NotFoundError){
+      return res.status(404).json({
       message: "Produto nao encontrada.",
+      });
+    }
+
+    res.status(500).json({
+      message: "Erro interno ao remover produto.",
     });
   }
 }
 
-async function getByKeyword(req: Request, res: Response){
+
+async function getByKeyword(req: Request<{ keyword: string }>, res: Response){
     const {keyword} = req.params;
 
     if(!keyword || typeof keyword != "string"){

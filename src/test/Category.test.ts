@@ -14,7 +14,7 @@ describe("Category - Testes unitários", () => {
         expect (category.getName()).toBe("Pizzas");
         expect (category.getDisplayOrder()).toBe(1);
         expect (category.getDescription()).toBe("Categoria de pizzas");
-        expect (category.getIcon()).toBe("");
+        expect (category.getIcon()).toBe("🍕");
         expect (category.isActive()).toBe(true);
         expect (category.getId()).toBeUndefined();
     });
@@ -26,7 +26,7 @@ describe("Category - Testes unitários", () => {
 
         expect(() => {
             new Category(name, display_order);
-        }).toThrow("O nome da categoria é obrigarorio.");
+        }).toThrow("O nome da categoria é obrigatório.");
     });
 
 
@@ -36,7 +36,7 @@ describe("Category - Testes unitários", () => {
 
         expect(() => {
             new Category(name, display_order);
-        }).toThrow("O nome da categoria é obrigarorio.");
+        }).toThrow("O nome da categoria é obrigatório.");
     });
 
 
@@ -56,7 +56,7 @@ describe("Category - Testes unitários", () => {
 
         expect(() => {
             new Category(name, display_order);
-        }).toThrow("A ordem de exibição deve ser um numero inteiro maior ou igual a zero.")
+        }).toThrow("A ordem de exibição deve ser um número inteiro maior ou igual a zero.")
     });
 
 
@@ -66,7 +66,7 @@ describe("Category - Testes unitários", () => {
 
         expect(() => {
             new Category(name, display_order);
-        }).toThrow("A ordem de exibição deve ser um numero inteiro maior ou igual a zero.")
+        }).toThrow("A ordem de exibição deve ser um número inteiro maior ou igual a zero.")
     });
 
 
@@ -116,16 +116,16 @@ describe("Category - Testes unitários", () => {
 
 
     it("deve restaurar uma categoria existente", () => {
-        const id = "";
+        const id = "abc-123";
         const name = "Pizzas";
         const display_order = 1;
         const active = false;
         const description = "Categoria de pizzas";
-        const icon = "";
+        const icon = "🍕";
 
         const category = Category.restore(id, name, display_order, active, description, icon);
 
-        expect (category.getId()).toBe("Pizzas");
+        expect (category.getId()).toBe("abc-123");
         expect (category.getName()).toBe("Pizzas");
         expect (category.getDisplayOrder()).toBe(1);
         expect (category.isActive()).toBe(false);

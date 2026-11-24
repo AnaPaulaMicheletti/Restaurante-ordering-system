@@ -1,4 +1,5 @@
 import supabase from "../config/supabase.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 import { Product } from "../models/Product.js";
 
 async function findAll(){
@@ -23,13 +24,17 @@ async function findById(id: string): Promise<Product> {
         throw error;
     }
 
+    if(!data){
+        throw new NotFoundError("Produto não encontrado.");
+    }
+
     return Product.restore(
             data.id,
             data.name,
-            data.display_order,
-            data.active,
             data.description,
             data.icon,
+            data.display_order,
+            data.active,
             data.category_id,
         );
 }
@@ -78,6 +83,11 @@ async function update(product: Product){
     if(error){
         throw error;
     }
+
+    if(!data){
+        throw new NotFoundError("Produto não encontrado.");
+    }
+
     return data;
 }
 
@@ -87,11 +97,16 @@ async function remove(id: string){
     .delete()
     .eq("id", id)
     .select()
-    .single();
+    .maybeSingle();
     
     if(error){
         throw error;
     }
+
+    if(!data){
+        throw new NotFoundError("Produto não encontrado.");
+    }
+
     return data;
 }
 

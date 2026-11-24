@@ -49,7 +49,7 @@ describe("Category - Teste de integração", () => {
         if(error){
             throw new Error (`Falha ao limpar categorias do teste: ${error.message}`);
         }
-    });
+    }, 20_000);
 
     it("deve criar uma categoria válida", async () => {
             const data = makeCategoryData();
@@ -62,24 +62,24 @@ describe("Category - Teste de integração", () => {
                 ...data,
                 active: true,
             });
-    });
+        }, 20_000);
 
     it("deve listar as categorias inclusive a categoria criada", async () => {
-            const {id, data} = createCategory();
-    
-            const response = await request(app).get("/categories");
-    
-            expect(response.status).toBe(200);
-            expect(Array.isArray(response.body)).toBe(true);
-            expect(response.body).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({
-                        id,
-                        name: data.name,
-                    ]),
-                ]),
-            );
-    }, 20_000);
+        const { id, data } = await createCategory();
+
+        const response = await request(app).get("/categories");
+
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id,
+              name: data.name,
+        }),
+      ]),
+    );
+  }, 20_000);
 
     it("deve consultar uma categoria existente pelo ID", async () => {
             const {id, data} = await createCategory();
@@ -95,22 +95,22 @@ describe("Category - Teste de integração", () => {
     },20_000);
 
     it("deve buscar uma categoria por palavra-chave", async () => {
-            const {id, data} = await createCategory();
-    
-            const response = await request(app).get(
-                `/categories/search/${encodeURIComponent(data.name)}`,
-            );
-    
-            expect(response.status).toBe(200);
-            expect(response.body).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({
-                        id,
-                        name: data.name,
-                    }),
-                ]),
-            };
-    },20_000);
+        const { id, data } = await createCategory();
+
+        const response = await request(app).get(
+          `/categories/search/${encodeURIComponent(data.name)}`,
+        );
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({
+              id,
+              name: data.name,
+            }),
+          ]),
+        );
+    }, 20_000);
 
     it("deve remover uma categoria existente", async () => {
             const {id} = await createCategory();
@@ -118,7 +118,7 @@ describe("Category - Teste de integração", () => {
             const response = await request(app).delete(`/categories/${id}`);
     
             expect(response.status).toBe(200);
-            expect(response.body).toEqual({message: "Categoria removida com sucesso!"});
+            expect(response.body).toEqual({message: "Categoria removida com sucesso."});
     },20_000);
 
     it("deve atualizar uma categoria existente", async () => {

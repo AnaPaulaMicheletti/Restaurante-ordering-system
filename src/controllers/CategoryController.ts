@@ -1,23 +1,21 @@
 import type { Request, Response } from "express";
 import { Category } from "../models/Category.js";
 import CategoryRepository from "../repositories/CategoryRepository.js";
-import { ValidationError } from "../errors/Validation.Error.js";
+import { ValidationError } from "../errors/ValidationError.js";
 import { NotFoundError } from "../errors/NotFoundError.js";
 
 async function getAll(req: Request, res: Response){
-    try {
-        try{
-            const categories = await CategoryRepository.findAll();
-            res.status(200).json(categories);
+    try{
+        const categories = await CategoryRepository.findAll();
+        res.status(200).json(categories);
         
           }catch(error){
-            console.log("Erro ao buscar categoria:", (error as Error).message);
+            console.log("Erro ao buscar categoria:", error);
 
             res.status(404).json({
               message: "Erro ao buscar categorias.",
             });
-        }
-    }catch (error){}
+    }
 }
 
 async function getById(req: Request <{id: string}>, res: Response){
@@ -31,6 +29,7 @@ async function getById(req: Request <{id: string}>, res: Response){
     try{
         const category = await CategoryRepository.findById(id);
         res.status(200).json({
+          id: category.getId(),
           name: category.getName(),
           description: category.getDescription(),
           icon: category.getIcon(),
@@ -42,7 +41,7 @@ async function getById(req: Request <{id: string}>, res: Response){
         console.log("Erro ao buscar categoria: ", error);
 
         if(error instanceof NotFoundError){
-          return res.status(400).json({
+          return res.status(404).json({
             message: error.message,
           });
         }
@@ -64,6 +63,8 @@ async function create(req: Request, res: Response){
         res.status(201).json(createdCategory);
 
   }catch (error){
+    console.log("Erro ao criar categoria: ", error);
+    
     if(error instanceof ValidationError){
         return res.status(400).json({
         message: error.message,
@@ -122,7 +123,7 @@ async function update(req: Request <{id: string}>, res: Response){
     console.log("Erro ao atualizar categoria: ", error);
 
     if(error instanceof ValidationError){
-        res.status(400).json({
+        return res.status(400).json({
         message: error.message,
       });
     }
@@ -133,7 +134,7 @@ async function update(req: Request <{id: string}>, res: Response){
       });
     }
 
-    res.status(500).json({
+    res.status(404).json({
       message: "Erro interno ao atualizar categoria.",
     });
   }
@@ -143,7 +144,7 @@ async function remove(req: Request <{id: string}>, res: Response){
     const {id} = req.params
 
     if(!id){
-        return res.status(400).json({
+        return res.status(404).json({
             message: "ID da Categoria não informado.",
         });
     }
@@ -159,18 +160,18 @@ async function remove(req: Request <{id: string}>, res: Response){
     console.log("Erro ao remover categoria: ", error);
 
     if(error instanceof NotFoundError){
-      res.status(404).json({
+        return res.status(404).json({
         message: error.message,
       });
     }
 
-    res.status(500).json({
+    res.status(404).json({
       message: "Erro interno ao remover categoria.",
     });
   }
 }
 
-async function getByKeyword(req: Request, res: Response){
+async function getByKeyword(req: Request<{ keyword: string }>, res: Response){
     const {keyword} = req.params;
 
     if(!keyword || typeof keyword != "string"){
@@ -184,10 +185,10 @@ async function getByKeyword(req: Request, res: Response){
         res.status(200).json(categories);
 
     }catch (error){
-    console.log("Erro ao buscar categoria: ", error);
+    console.log("Erro ao pesquisar categorias: ", error);
 
-    res.status(500).json({
-      message: "Erro ao buscar categoria.",
+    res.status(404).json({
+      message: "Erro interno ao pesquisar categorias.",
     });
   }
 }
